@@ -12,5 +12,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  security:
+    user:
+      name: user
+      password: password
 
 debug: true
