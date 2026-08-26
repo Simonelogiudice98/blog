@@ -30,14 +30,18 @@ public class Post {
     @Column (name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false,name = "category_id")
+    private Category category;
+
     @PrePersist
     protected void onCreate(){
         this.createdAt = LocalDateTime.now();
         this.updatedAt = null;
-    };
+    }
 
     @PreUpdate
     protected void onUpdate(){
         this.updatedAt = LocalDateTime.now();
-    };
+    }
 }
