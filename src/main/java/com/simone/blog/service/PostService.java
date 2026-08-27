@@ -2,6 +2,7 @@ package com.simone.blog.service;
 
 import com.simone.blog.dto.CreatePostDTO;
 import com.simone.blog.dto.PostDTO;
+import com.simone.blog.entity.Post;
 import com.simone.blog.mapper.PostMapper;
 import com.simone.blog.repository.CategoryRepository;
 import com.simone.blog.repository.PostRepository;
@@ -15,24 +16,34 @@ public class PostService {
     private final CategoryRepository categoryRepository;
     private final PostMapper postMapper;
 
-    public PostService(PostRepository postRepository,CategoryRepository categoryRepository, PostMapper postMapper) {
+    public PostService(PostRepository postRepository, CategoryRepository categoryRepository, PostMapper postMapper) {
 
         this.postRepository = postRepository;
         this.categoryRepository = categoryRepository;
         this.postMapper = postMapper;
     }
 
-    public List<PostDTO> getPosts() {
+    public List<PostDTO> getPosts(String slug) {
 
-        return postRepository.findAll()
+        List<Post> posts;
+
+        if (slug != null) {
+             posts = postRepository.findByCategorySlug(slug);
+
+        } else {
+             posts = postRepository.findAllWithCategory();
+        }
+
+        return posts
                 .stream()
                 .map(postMapper::toDto)
                 .toList();
+
     }
 
     public PostDTO getPostById(Long id) {
 
-        var post = postRepository.findById(id);
+        var post = postRepository.findByIdWithCategory(id);
 
         if (post.isEmpty()) {
             throw new RuntimeException();
@@ -49,8 +60,9 @@ public class PostService {
 
         }
 
-        var newPost = postRepository.save(postMapper.toEntity(dto,category.get()));
+        var newPost = postRepository.save(postMapper.toEntity(dto, category.get()));
         return postMapper.toDto(newPost);
 
     }
+
 }

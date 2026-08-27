@@ -18,8 +18,8 @@ public class PostController {
     }
 
     @GetMapping
-    public List<PostDTO> getPosts(){
-        return this.postService.getPosts();
+    public List<PostDTO> getPosts(@RequestParam(name = "category", required = false) String slug){
+        return this.postService.getPosts(slug);
     }
 
     @GetMapping("/{id}")
