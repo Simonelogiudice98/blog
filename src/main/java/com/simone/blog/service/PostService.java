@@ -6,9 +6,10 @@ import com.simone.blog.entity.Post;
 import com.simone.blog.mapper.PostMapper;
 import com.simone.blog.repository.CategoryRepository;
 import com.simone.blog.repository.PostRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Service
 public class PostService {
@@ -23,21 +24,18 @@ public class PostService {
         this.postMapper = postMapper;
     }
 
-    public List<PostDTO> getPosts(String slug) {
+    public Page<PostDTO> getPosts(String slug, Pageable pageable) {
 
-        List<Post> posts;
+        Page<Post> posts;
 
         if (slug != null) {
-             posts = postRepository.findByCategorySlug(slug);
+             posts = postRepository.findByCategorySlug(slug,pageable);
 
         } else {
-             posts = postRepository.findAllWithCategory();
+             posts = postRepository.findAllWithCategory(pageable);
         }
 
-        return posts
-                .stream()
-                .map(postMapper::toDto)
-                .toList();
+        return posts.map(postMapper::toDto);
 
     }
 

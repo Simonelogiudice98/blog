@@ -3,9 +3,9 @@ package com.simone.blog.controller;
 import com.simone.blog.dto.CreatePostDTO;
 import com.simone.blog.dto.PostDTO;
 import com.simone.blog.service.PostService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/posts")
@@ -18,8 +18,8 @@ public class PostController {
     }
 
     @GetMapping
-    public List<PostDTO> getPosts(@RequestParam(name = "category", required = false) String slug){
-        return this.postService.getPosts(slug);
+    public Page<PostDTO> getPosts(@RequestParam(name = "category", required = false) String slug, Pageable pageable){
+        return this.postService.getPosts(slug,pageable);
     }
 
     @GetMapping("/{id}")
