@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
@@ -22,6 +22,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 //    Page<Post> findByCategorySlug(@Param("slug") String slug,Pageable pageable);
 
     @Query(value = "SELECT p FROM Post p JOIN FETCH p.category c WHERE c.id IN :categoryIds",countQuery = "SELECT COUNT(p) FROM Post p JOIN p.category c WHERE c.id IN :categoryIds")
-    Page<Post> findByCategoryIds(@Param("categoryIds") List<Long> categoryIds,Pageable pageable);
+    Page<Post> findByCategoryIds(@Param("categoryIds") Collection<Long> categoryIds, Pageable pageable);
 
 }

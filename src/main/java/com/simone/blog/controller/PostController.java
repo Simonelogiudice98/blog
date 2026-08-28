@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/posts")
 public class PostController {
@@ -18,8 +20,8 @@ public class PostController {
     }
 
     @GetMapping
-    public Page<PostDTO> getPosts(@RequestParam(name = "category", required = false) String slug, Pageable pageable){
-        return this.postService.getPosts(slug,pageable);
+    public Page<PostDTO> getPosts(@RequestParam(name = "category", required = false) List<String> slugs, Pageable pageable){
+        return this.postService.getPosts(slugs,pageable);
     }
 
     @GetMapping("/{id}")

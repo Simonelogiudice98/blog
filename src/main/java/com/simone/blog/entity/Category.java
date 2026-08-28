@@ -20,7 +20,7 @@ public class Category {
     @Column(nullable = false, unique = true )
     private String slug;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Category parent;
 

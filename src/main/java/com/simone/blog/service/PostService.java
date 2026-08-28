@@ -11,8 +11,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Service
@@ -28,18 +30,21 @@ public class PostService {
         this.postMapper = postMapper;
     }
 
-    public Page<PostDTO> getPosts(String slug, Pageable pageable) {
+    public Page<PostDTO> getPosts(List<String> slugs, Pageable pageable) {
 
         Page<Post> posts;
 
-        if (slug != null) {
-            Category category = categoryRepository.findBySlug(slug)
-                    .orElseThrow(() -> new RuntimeException("Categoria non trovata: " + slug));
+        if (slugs != null && !slugs.isEmpty()) {
+            List<Category> categories = categoryRepository.findBySlugIn(slugs);
+            if (categories.isEmpty()) {
+                throw new RuntimeException("Nessuna categoria trovata: " + slugs);
+            }
 
-            List<Category> children = categoryRepository.findByParentId(category.getId());
+            List<Long> requestedIds = categories.stream().map(Category::getId).toList();
+            List<Category> children = categoryRepository.findByParentIdIn(requestedIds);
 
-            List<Long> ids = new ArrayList<>();
-            ids.add(category.getId());
+            Set<Long> ids = new LinkedHashSet<>();
+            ids.addAll(requestedIds);
             ids.addAll(children
                     .stream()
                     .map(Category::getId)
