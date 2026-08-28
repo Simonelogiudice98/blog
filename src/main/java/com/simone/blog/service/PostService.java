@@ -2,6 +2,7 @@ package com.simone.blog.service;
 
 import com.simone.blog.dto.CreatePostDTO;
 import com.simone.blog.dto.PostDTO;
+import com.simone.blog.entity.Category;
 import com.simone.blog.entity.Post;
 import com.simone.blog.mapper.PostMapper;
 import com.simone.blog.repository.CategoryRepository;
@@ -9,6 +10,9 @@ import com.simone.blog.repository.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -29,10 +33,22 @@ public class PostService {
         Page<Post> posts;
 
         if (slug != null) {
-             posts = postRepository.findByCategorySlug(slug,pageable);
+            Category category = categoryRepository.findBySlug(slug)
+                    .orElseThrow(() -> new RuntimeException("Categoria non trovata: " + slug));
+
+            List<Category> children = categoryRepository.findByParentId(category.getId());
+
+            List<Long> ids = new ArrayList<>();
+            ids.add(category.getId());
+            ids.addAll(children
+                    .stream()
+                    .map(Category::getId)
+                    .toList());
+
+            posts = postRepository.findByCategoryIds(ids, pageable);
 
         } else {
-             posts = postRepository.findAllWithCategory(pageable);
+            posts = postRepository.findAllWithCategory(pageable);
         }
 
         return posts.map(postMapper::toDto);
