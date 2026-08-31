@@ -32,6 +32,18 @@ public class PostService {
         this.postMapper = postMapper;
     }
 
+    private Category resolveAssignableCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new RuntimeException("Categoria non trovata: " + categoryId));
+
+        var isParent = categoryRepository.existsByParentId(categoryId);
+        if (isParent) {
+            throw new RuntimeException("Non è possibile assegnare un post a una macro-categoria: " + category.getName());
+        }
+        return category;
+
+    }
+
     @Transactional(readOnly = true)
     public Page<PostDTO> getPosts(List<String> slugs, Pageable pageable) {
 
@@ -66,25 +78,19 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostDTO getPostById(Long id) {
 
-        var post = postRepository.findByIdWithCategory(id);
+        var post = postRepository.findByIdWithCategory(id)
+                .orElseThrow(() -> new RuntimeException("Post non trovato: " + id));
 
-        if (post.isEmpty()) {
-            throw new RuntimeException();
-        }
-        return postMapper.toDto(post.get());
+        return postMapper.toDto(post);
 
     }
 
     @Transactional
     public PostDTO createPost(CreatePostDTO dto) {
 
-        var category = categoryRepository.findById(dto.categoryId());
-        if (category.isEmpty()) {
-            throw new RuntimeException();
+        Category category = resolveAssignableCategory(dto.categoryId());
 
-        }
-
-        Post newPost = postRepository.save(postMapper.toEntity(dto, category.get()));
+        Post newPost = postRepository.save(postMapper.toEntity(dto, category));
         return postMapper.toDto(newPost);
 
     }
@@ -94,8 +100,7 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post non trovato: " + id));
 
-        Category category = categoryRepository.findById(dto.categoryId())
-                .orElseThrow(() -> new RuntimeException("Category non trovata: " + dto.categoryId()));
+        Category category = resolveAssignableCategory(dto.categoryId());
 
         post.setTitle(dto.title());
         post.setContent(dto.content());
@@ -104,6 +109,14 @@ public class PostService {
 
         Post postUpdated = postRepository.save(post);
         return postMapper.toDto(postUpdated);
+    }
+
+    @Transactional
+    public void deletePost(Long id){
+        Post post = postRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Post non trovato: " + id));
+
+        postRepository.delete(post);
     }
 
 }

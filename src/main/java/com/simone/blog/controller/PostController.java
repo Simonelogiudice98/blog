@@ -8,6 +8,7 @@ import com.simone.blog.validation.SortValidator;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
@@ -42,5 +43,9 @@ public class PostController {
 
     @PutMapping("/{id}")
     public PostDTO updatePost(@PathVariable Long id,@RequestBody @Valid UpdatePostDTO dto){ return this.postService.updatePost(id,dto);}
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePost(@PathVariable Long id){this.postService.deletePost(id);}
 
 }

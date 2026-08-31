@@ -10,6 +10,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     List<Category> findBySlugIn(List<String> slugs);
 
-
     List<Category> findByParentIdIn(List<Long> parentIds);
+
+    boolean existsByParentId(Long parentId);
 }
