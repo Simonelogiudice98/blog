@@ -2,8 +2,10 @@ package com.simone.blog.controller;
 
 import com.simone.blog.dto.CreatePostDTO;
 import com.simone.blog.dto.PostDTO;
+import com.simone.blog.dto.UpdatePostDTO;
 import com.simone.blog.service.PostService;
 import com.simone.blog.validation.SortValidator;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -34,8 +36,11 @@ public class PostController {
     }
 
     @PostMapping
-    public PostDTO createPost(@RequestBody CreatePostDTO dto){
+    public PostDTO createPost(@RequestBody @Valid CreatePostDTO dto){
         return this.postService.createPost(dto);
     }
+
+    @PutMapping("/{id}")
+    public PostDTO updatePost(@PathVariable Long id,@RequestBody @Valid UpdatePostDTO dto){ return this.postService.updatePost(id,dto);}
 
 }

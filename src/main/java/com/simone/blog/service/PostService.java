@@ -2,6 +2,7 @@ package com.simone.blog.service;
 
 import com.simone.blog.dto.CreatePostDTO;
 import com.simone.blog.dto.PostDTO;
+import com.simone.blog.dto.UpdatePostDTO;
 import com.simone.blog.entity.Category;
 import com.simone.blog.entity.Post;
 import com.simone.blog.mapper.PostMapper;
@@ -10,6 +11,7 @@ import com.simone.blog.repository.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.LinkedHashSet;
@@ -30,6 +32,7 @@ public class PostService {
         this.postMapper = postMapper;
     }
 
+    @Transactional(readOnly = true)
     public Page<PostDTO> getPosts(List<String> slugs, Pageable pageable) {
 
         Page<Post> posts;
@@ -60,6 +63,7 @@ public class PostService {
 
     }
 
+    @Transactional(readOnly = true)
     public PostDTO getPostById(Long id) {
 
         var post = postRepository.findByIdWithCategory(id);
@@ -71,6 +75,7 @@ public class PostService {
 
     }
 
+    @Transactional
     public PostDTO createPost(CreatePostDTO dto) {
 
         var category = categoryRepository.findById(dto.categoryId());
@@ -79,9 +84,26 @@ public class PostService {
 
         }
 
-        var newPost = postRepository.save(postMapper.toEntity(dto, category.get()));
+        Post newPost = postRepository.save(postMapper.toEntity(dto, category.get()));
         return postMapper.toDto(newPost);
 
+    }
+
+    @Transactional
+    public PostDTO updatePost(Long id, UpdatePostDTO dto) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post non trovato: " + id));
+
+        Category category = categoryRepository.findById(dto.categoryId())
+                .orElseThrow(() -> new RuntimeException("Category non trovata: " + dto.categoryId()));
+
+        post.setTitle(dto.title());
+        post.setContent(dto.content());
+        post.setImageUrl(dto.imageUrl());
+        post.setCategory(category);
+
+        Post postUpdated = postRepository.save(post);
+        return postMapper.toDto(postUpdated);
     }
 
 }
