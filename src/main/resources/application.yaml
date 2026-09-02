@@ -17,5 +17,7 @@ spring:
     user:
       name: user
       password: password
-
+logging:
+  level:
+    com.simone.blog: DEBUG
 debug: true
