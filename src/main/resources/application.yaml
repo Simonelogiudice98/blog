@@ -20,4 +20,8 @@ spring:
 logging:
   level:
     com.simone.blog: DEBUG
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 7200000
+
 debug: true
