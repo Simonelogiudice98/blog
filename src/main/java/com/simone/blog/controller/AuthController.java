@@ -1,6 +1,8 @@
 package com.simone.blog.controller;
 
 import com.simone.blog.dto.CreateUserDTO;
+import com.simone.blog.dto.LoginRequestDTO;
+import com.simone.blog.dto.LoginResponseDTO;
 import com.simone.blog.dto.UserDTO;
 import com.simone.blog.service.AuthService;
 import jakarta.validation.Valid;
@@ -22,6 +24,6 @@ public class AuthController {
     @PostMapping("/register")
     public UserDTO createUser(@RequestBody @Valid CreateUserDTO dto){return this.authService.register(dto);}
 
-//    @PostMapping("/login")
-//    public LoginResponseDTO login(@RequestBody @Valid LoginRequestDTO dto){}
+    @PostMapping("/login")
+    public LoginResponseDTO login(@RequestBody @Valid LoginRequestDTO dto){return this.authService.login(dto);}
 }

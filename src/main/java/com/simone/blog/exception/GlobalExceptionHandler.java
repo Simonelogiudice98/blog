@@ -44,4 +44,11 @@ public class GlobalExceptionHandler {
         log.error("Richiesta fallita: {} {} ", request.getMethod(), request.getRequestURI(),ex);
         return new ApiError(Instant.now(),HttpStatus.INTERNAL_SERVER_ERROR.value(),"INTERNAL_SERVER_ERROR","Si è verificato un errore imprevisto",request.getRequestURI());
     }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiError handleUnauthorized(UnauthorizedException ex,HttpServletRequest request){
+        log.debug("Richiesta fallita: {} {} - {} ", request.getMethod(), request.getRequestURI(),ex.getMessage());
+        return new ApiError(Instant.now(),HttpStatus.UNAUTHORIZED.value(),"UNAUTHORIZED",ex.getMessage(),request.getRequestURI());
+    }
 }
