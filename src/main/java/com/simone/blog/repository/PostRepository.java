@@ -12,16 +12,13 @@ import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    @Query(value = "SELECT p FROM Post p JOIN FETCH p.category c",countQuery = "SELECT COUNT(p) FROM Post p")
+    @Query(value = "SELECT p FROM Post p JOIN FETCH p.category c JOIN FETCH p.author",countQuery = "SELECT COUNT(p) FROM Post p")
     Page<Post> findAllWithCategory(Pageable pageable);
 
-    @Query("SELECT p FROM Post p JOIN FETCH p.category c WHERE p.id = :id")
+    @Query("SELECT p FROM Post p JOIN FETCH p.category c JOIN FETCH p.author WHERE p.id = :id")
     Optional<Post> findByIdWithCategory(@Param("id") Long id);
 
-//    @Query(value = "SELECT p FROM Post p JOIN FETCH p.category c WHERE c.slug = :slug",countQuery = "SELECT COUNT(p) FROM Post p JOIN p.category c WHERE c.slug = :slug")
-//    Page<Post> findByCategorySlug(@Param("slug") String slug,Pageable pageable);
-
-    @Query(value = "SELECT p FROM Post p JOIN FETCH p.category c WHERE c.id IN :categoryIds",countQuery = "SELECT COUNT(p) FROM Post p JOIN p.category c WHERE c.id IN :categoryIds")
+    @Query(value = "SELECT p FROM Post p JOIN FETCH p.category c JOIN FETCH p.author WHERE c.id IN :categoryIds",countQuery = "SELECT COUNT(p) FROM Post p JOIN p.category c WHERE c.id IN :categoryIds")
     Page<Post> findByCategoryIds(@Param("categoryIds") Collection<Long> categoryIds, Pageable pageable);
 
 }

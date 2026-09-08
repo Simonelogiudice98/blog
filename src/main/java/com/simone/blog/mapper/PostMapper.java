@@ -1,5 +1,6 @@
 package com.simone.blog.mapper;
 
+import com.simone.blog.dto.AuthorDTO;
 import com.simone.blog.dto.CreatePostDTO;
 import com.simone.blog.dto.PostDTO;
 import com.simone.blog.entity.Category;
@@ -27,7 +28,7 @@ public class PostMapper {
     }
 
     public PostDTO toDto(Post post){
-        return new PostDTO(post.getId(),post.getTitle(),post.getContent(), post.getImageUrl(), post.getCreatedAt(),categoryMapper.toDto(post.getCategory()));
+        return new PostDTO(post.getId(),post.getTitle(),post.getContent(), post.getImageUrl(), post.getCreatedAt(),categoryMapper.toDto(post.getCategory()),new AuthorDTO(post.getAuthor().getUsername(), post.getAuthor().getFullName()));
 
     }
 
