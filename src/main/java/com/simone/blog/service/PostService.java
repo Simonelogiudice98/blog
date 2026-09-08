@@ -5,13 +5,18 @@ import com.simone.blog.dto.PostDTO;
 import com.simone.blog.dto.UpdatePostDTO;
 import com.simone.blog.entity.Category;
 import com.simone.blog.entity.Post;
+import com.simone.blog.entity.User;
+import com.simone.blog.exception.AuthenticatedUserNotFoundException;
 import com.simone.blog.exception.BadRequestException;
 import com.simone.blog.exception.ResourceNotFoundException;
 import com.simone.blog.mapper.PostMapper;
 import com.simone.blog.repository.CategoryRepository;
 import com.simone.blog.repository.PostRepository;
+import com.simone.blog.repository.UserRepository;
+import com.simone.blog.security.JwtPrincipal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,12 +31,13 @@ public class PostService {
     private final PostRepository postRepository;
     private final CategoryRepository categoryRepository;
     private final PostMapper postMapper;
+    private final UserRepository userRepository;
 
-    public PostService(PostRepository postRepository, CategoryRepository categoryRepository, PostMapper postMapper) {
-
+    public PostService(PostRepository postRepository, CategoryRepository categoryRepository, PostMapper postMapper, UserRepository userRepository) {
         this.postRepository = postRepository;
         this.categoryRepository = categoryRepository;
         this.postMapper = postMapper;
+        this.userRepository = userRepository;
     }
 
     private Category resolveAssignableCategory(Long categoryId) {
@@ -90,8 +96,12 @@ public class PostService {
     public PostDTO createPost(CreatePostDTO dto) {
 
         Category category = resolveAssignableCategory(dto.categoryId());
+        JwtPrincipal principal = (JwtPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        Post newPost = postRepository.save(postMapper.toEntity(dto, category));
+        User author = userRepository.findByEmail(principal.email())
+                .orElseThrow(() -> new AuthenticatedUserNotFoundException("User non trovato: " + principal.email()));
+
+        Post newPost = postRepository.save(postMapper.toEntity(dto, category,author));
         return postMapper.toDto(newPost);
 
     }

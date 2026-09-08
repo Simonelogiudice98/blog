@@ -34,6 +34,10 @@ public class Post {
     @JoinColumn(nullable = false,name = "category_id")
     private Category category;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(nullable = false,name = "author_id")
+    private User author;
+
     @PrePersist
     protected void onCreate(){
         this.createdAt = LocalDateTime.now();

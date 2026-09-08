@@ -4,6 +4,7 @@ import com.simone.blog.dto.CreatePostDTO;
 import com.simone.blog.dto.PostDTO;
 import com.simone.blog.entity.Category;
 import com.simone.blog.entity.Post;
+import com.simone.blog.entity.User;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,12 +16,13 @@ public class PostMapper {
         this.categoryMapper = categoryMapper;
     }
 
-    public Post toEntity(CreatePostDTO dto,Category category){
+    public Post toEntity(CreatePostDTO dto,Category category, User author){
         Post post = new Post();
         post.setTitle(dto.title());
         post.setContent(dto.content());
         post.setImageUrl(dto.imageUrl());
         post.setCategory(category);
+        post.setAuthor(author);
         return post;
     }
 
