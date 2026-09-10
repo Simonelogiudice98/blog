@@ -21,4 +21,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query(value = "SELECT p FROM Post p JOIN FETCH p.category c JOIN FETCH p.author WHERE c.id IN :categoryIds",countQuery = "SELECT COUNT(p) FROM Post p JOIN p.category c WHERE c.id IN :categoryIds")
     Page<Post> findByCategoryIds(@Param("categoryIds") Collection<Long> categoryIds, Pageable pageable);
 
+    boolean existsByIdAndAuthorEmail(Long id, String email);
 }

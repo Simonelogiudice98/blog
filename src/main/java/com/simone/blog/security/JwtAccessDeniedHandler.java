@@ -25,7 +25,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
 
-        ApiError apiError = new ApiError(Instant.now(),HttpServletResponse.SC_FORBIDDEN,"FORBIDDEN","Utente non autorizzato",request.getRequestURI());
+        ApiError apiError = new ApiError(Instant.now(),HttpServletResponse.SC_FORBIDDEN,"FORBIDDEN","Accesso negato",request.getRequestURI());
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 

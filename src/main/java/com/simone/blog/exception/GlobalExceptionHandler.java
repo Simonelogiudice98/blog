@@ -5,6 +5,7 @@ import com.simone.blog.dto.ApiError;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -50,5 +51,12 @@ public class GlobalExceptionHandler {
     public ApiError handleUnauthorized(UnauthorizedException ex,HttpServletRequest request){
         log.debug("Richiesta fallita: {} {} - {} ", request.getMethod(), request.getRequestURI(),ex.getMessage());
         return new ApiError(Instant.now(),HttpStatus.UNAUTHORIZED.value(),"UNAUTHORIZED",ex.getMessage(),request.getRequestURI());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ApiError handleAccessDenied(AccessDeniedException ex, HttpServletRequest request){
+        log.debug("Richiesta fallita: {} {} - {} ", request.getMethod(), request.getRequestURI(),ex.getMessage());
+        return new ApiError(Instant.now(),HttpStatus.FORBIDDEN.value(),"FORBIDDEN","Accesso negato",request.getRequestURI());
     }
 }

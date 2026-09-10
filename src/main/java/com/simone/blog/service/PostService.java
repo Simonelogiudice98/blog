@@ -14,6 +14,7 @@ import com.simone.blog.repository.CategoryRepository;
 import com.simone.blog.repository.PostRepository;
 import com.simone.blog.repository.UserRepository;
 import com.simone.blog.security.JwtPrincipal;
+import com.simone.blog.security.PostAuthor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -107,6 +108,7 @@ public class PostService {
     }
 
     @Transactional
+    @PostAuthor
     public PostDTO updatePost(Long id, UpdatePostDTO dto) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post non trovato: " + id));
@@ -123,6 +125,7 @@ public class PostService {
     }
 
     @Transactional
+    @PostAuthor
     public void deletePost(Long id){
         Post post = postRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Post non trovato: " + id));
