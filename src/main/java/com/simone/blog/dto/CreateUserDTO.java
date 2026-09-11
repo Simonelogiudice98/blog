@@ -3,6 +3,7 @@ package com.simone.blog.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.jspecify.annotations.NonNull;
 
 public record CreateUserDTO(
         @NotBlank @Size(max = 255) @Email String email,
@@ -10,4 +11,9 @@ public record CreateUserDTO(
         @NotBlank @Size(max = 255) String username,
         @NotBlank @Size(min = 8, max = 72) String password
 ) {
+
+    @Override
+    public @NonNull String toString() {
+        return "CreateUserDTO[email=" + email + ", password=***]";
+    }
 }

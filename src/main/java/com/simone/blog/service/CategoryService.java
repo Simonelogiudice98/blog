@@ -1,18 +1,21 @@
 package com.simone.blog.service;
 
 import com.simone.blog.dto.CategoryDTO;
+import com.simone.blog.dto.CategoryTreeDTO;
 import com.simone.blog.dto.CreateCategoryDTO;
 import com.simone.blog.entity.Category;
-import com.simone.blog.entity.Role;
-import com.simone.blog.entity.User;
 import com.simone.blog.exception.BadRequestException;
 import com.simone.blog.mapper.CategoryMapper;
 import com.simone.blog.repository.CategoryRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.Normalizer;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryService {
@@ -33,7 +36,7 @@ public class CategoryService {
             parent = categoryRepository.findById(dto.parentId())
                     .orElseThrow(() -> new BadRequestException("Nessuna categoria trovata per l'id: " + dto.parentId()));
 
-            if(parent.getParent() != null){
+            if (parent.getParent() != null) {
                 throw new BadRequestException("La categoria genitore deve essere una macro-categoria: " + parent.getName() + " è già una sottocategoria");
             }
 
@@ -66,12 +69,21 @@ public class CategoryService {
 
     }
 
-    private String generateSlug(String name){
-        String slug = Normalizer.normalize(name.toLowerCase(Locale.ROOT), Normalizer.Form.NFD)
+    private String generateSlug(String name) {
+        return Normalizer.normalize(name.toLowerCase(Locale.ROOT), Normalizer.Form.NFD)
                 .replaceAll("\\p{M}", "")
                 .replaceAll("[^a-z0-9]+", "-")
                 .replaceAll("^-|-$", "");
-        return slug;
+
+    }
+
+    @Transactional(readOnly = true)
+    public List<CategoryTreeDTO> getCategoryTree() {
+        List<Category> categories = categoryRepository.findAll(Sort.by("name"));
+        List<Category> macros = categories.stream().filter(c -> c.getParent() == null).toList();
+        Map<Long, List<Category>> childrenByParentId = categories.stream().filter(c -> c.getParent() != null).collect(Collectors.groupingBy(c -> c.getParent().getId()));
+
+        return macros.stream().map(m -> categoryMapper.toCategoryTreeDto(m, childrenByParentId.getOrDefault(m.getId(), List.of()))).toList();
 
     }
 

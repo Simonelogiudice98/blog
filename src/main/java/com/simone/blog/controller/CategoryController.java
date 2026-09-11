@@ -1,13 +1,12 @@
 package com.simone.blog.controller;
 
 import com.simone.blog.dto.CategoryDTO;
+import com.simone.blog.dto.CategoryTreeDTO;
 import com.simone.blog.dto.CreateCategoryDTO;
 import com.simone.blog.service.CategoryService;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/categories")
@@ -21,4 +20,7 @@ public class CategoryController {
 
     @PostMapping
     public CategoryDTO createCategory(@RequestBody @Valid CreateCategoryDTO dto){return this.categoryService.createCategory(dto);}
+
+    @GetMapping
+    public List<CategoryTreeDTO> getCategoriesTree(){return this.categoryService.getCategoryTree();}
 }
