@@ -19,5 +19,6 @@ logging:
 jwt:
   secret: ${JWT_SECRET}
   expiration: 7200000
+  refresh-expiration: 7d
 
 debug: true
