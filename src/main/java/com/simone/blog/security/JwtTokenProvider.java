@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
@@ -17,10 +18,10 @@ import java.util.Optional;
 public class JwtTokenProvider {
 
     private final SecretKey secretKey;
-    private final long expiration;
+    private final Duration expiration;
     private final JwtParser parser;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") long expiration) {
+    public JwtTokenProvider(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") Duration expiration) {
         this.expiration = expiration;
         this.secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secret));
         this.parser = Jwts.parser().verifyWith(secretKey).build();
@@ -32,7 +33,7 @@ public class JwtTokenProvider {
                 .subject(user.getEmail())
                 .claim("role", user.getRole().name())
                 .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plusMillis(expiration)))
+                .expiration(Date.from(now.plus(expiration)))
                 .signWith(secretKey)
                 .compact();
     }
